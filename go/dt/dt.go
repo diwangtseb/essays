@@ -14,8 +14,8 @@ type MethodPair struct {
 }
 
 type TransactionActor interface {
-	SagaExecute(methodPairs ...MethodPair)
-	MsgExecute(methodPair ...MethodPair)
+	ExecuteSaga(methodPairs ...MethodPair)
+	ExecuteMsg(methodPair ...MethodPair)
 }
 
 type transactionActor struct {
@@ -26,7 +26,7 @@ type transactionActor struct {
 }
 
 // MsgExecute implements TransactionActor
-func (ta *transactionActor) MsgExecute(methodPair ...MethodPair) {
+func (ta *transactionActor) ExecuteMsg(methodPair ...MethodPair) {
 	msg := dtmgrpc.NewMsgGrpc(ta.dtmServerAddr, ta.gid)
 	for _, v := range methodPair {
 		msg = msg.Add(ta.withServerAction(v.Action), v.ProtoMsg)
@@ -54,7 +54,7 @@ func (ta *transactionActor) withServerCompensate(compensate string) string {
 }
 
 // Regist implements TransactionRegister
-func (ta *transactionActor) SagaExecute(methodPairs ...MethodPair) {
+func (ta *transactionActor) ExecuteSaga(methodPairs ...MethodPair) {
 	saga := dtmgrpc.NewSagaGrpc(ta.dtmServerAddr, ta.gid)
 	for _, methodPair := range methodPairs {
 		saga = saga.Add(ta.withServerAction(methodPair.Action), ta.withServerCompensate(methodPair.Compensate), methodPair.ProtoMsg)

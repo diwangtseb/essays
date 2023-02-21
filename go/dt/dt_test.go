@@ -14,12 +14,12 @@ const (
 func TestDtGrpc(t *testing.T) {
 	actor := NewTransactionActor(dtm_server, grpc_server)
 
-	actor.MsgExecute(MethodPair{
+	actor.ExecuteSaga(MethodPair{
 		Action:     "/dt.pb.TransService/TransIn",
-		Compensate: "",
+		Compensate: "/dt.pb.TransService/TransInRoll",
 		ProtoMsg: &pb.TransInReq{
 			Uid:    "1",
-			Amount: "100",
+			Amount: 100,
 		},
 	})
 }

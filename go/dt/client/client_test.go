@@ -11,6 +11,6 @@ func TestClient(t *testing.T) {
 	client := NewTransClient(":1234")
 	client.TransIn(context.TODO(), &pb.TransInReq{
 		Uid:    "1",
-		Amount: "2",
+		Amount: 1,
 	})
 }

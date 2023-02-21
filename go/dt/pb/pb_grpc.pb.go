@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransServiceClient interface {
 	TransIn(ctx context.Context, in *TransInReq, opts ...grpc.CallOption) (*TransInReply, error)
+	TransInRoll(ctx context.Context, in *TransInReq, opts ...grpc.CallOption) (*TransInReply, error)
 	TransOut(ctx context.Context, in *TransOutReq, opts ...grpc.CallOption) (*TransOutReply, error)
 }
 
@@ -43,6 +44,15 @@ func (c *transServiceClient) TransIn(ctx context.Context, in *TransInReq, opts .
 	return out, nil
 }
 
+func (c *transServiceClient) TransInRoll(ctx context.Context, in *TransInReq, opts ...grpc.CallOption) (*TransInReply, error) {
+	out := new(TransInReply)
+	err := c.cc.Invoke(ctx, "/dt.pb.TransService/TransInRoll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *transServiceClient) TransOut(ctx context.Context, in *TransOutReq, opts ...grpc.CallOption) (*TransOutReply, error) {
 	out := new(TransOutReply)
 	err := c.cc.Invoke(ctx, "/dt.pb.TransService/TransOut", in, out, opts...)
@@ -57,6 +67,7 @@ func (c *transServiceClient) TransOut(ctx context.Context, in *TransOutReq, opts
 // for forward compatibility
 type TransServiceServer interface {
 	TransIn(context.Context, *TransInReq) (*TransInReply, error)
+	TransInRoll(context.Context, *TransInReq) (*TransInReply, error)
 	TransOut(context.Context, *TransOutReq) (*TransOutReply, error)
 	mustEmbedUnimplementedTransServiceServer()
 }
@@ -67,6 +78,9 @@ type UnimplementedTransServiceServer struct {
 
 func (UnimplementedTransServiceServer) TransIn(context.Context, *TransInReq) (*TransInReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransIn not implemented")
+}
+func (UnimplementedTransServiceServer) TransInRoll(context.Context, *TransInReq) (*TransInReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransInRoll not implemented")
 }
 func (UnimplementedTransServiceServer) TransOut(context.Context, *TransOutReq) (*TransOutReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransOut not implemented")
@@ -102,6 +116,24 @@ func _TransService_TransIn_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TransService_TransInRoll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransInReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransServiceServer).TransInRoll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dt.pb.TransService/TransInRoll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransServiceServer).TransInRoll(ctx, req.(*TransInReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TransService_TransOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TransOutReq)
 	if err := dec(in); err != nil {
@@ -130,6 +162,10 @@ var TransService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TransIn",
 			Handler:    _TransService_TransIn_Handler,
+		},
+		{
+			MethodName: "TransInRoll",
+			Handler:    _TransService_TransInRoll_Handler,
 		},
 		{
 			MethodName: "TransOut",
