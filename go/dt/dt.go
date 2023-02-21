@@ -1,6 +1,7 @@
 package dt
 
 import (
+	"context"
 	"log"
 
 	"github.com/dtm-labs/client/dtmgrpc"
@@ -14,8 +15,8 @@ type MethodPair struct {
 }
 
 type TransactionActor interface {
-	ExecuteSaga(methodPairs ...MethodPair)
-	ExecuteMsg(methodPair ...MethodPair)
+	ExecuteSaga(ctx context.Context, methodPairs ...MethodPair)
+	ExecuteMsg(ctx context.Context, methodPair ...MethodPair)
 }
 
 type transactionActor struct {
@@ -26,7 +27,7 @@ type transactionActor struct {
 }
 
 // MsgExecute implements TransactionActor
-func (ta *transactionActor) ExecuteMsg(methodPair ...MethodPair) {
+func (ta *transactionActor) ExecuteMsg(ctx context.Context, methodPair ...MethodPair) {
 	msg := dtmgrpc.NewMsgGrpc(ta.dtmServerAddr, ta.gid)
 	for _, v := range methodPair {
 		msg = msg.Add(ta.withServerAction(v.Action), v.ProtoMsg)
@@ -54,8 +55,9 @@ func (ta *transactionActor) withServerCompensate(compensate string) string {
 }
 
 // Regist implements TransactionRegister
-func (ta *transactionActor) ExecuteSaga(methodPairs ...MethodPair) {
+func (ta *transactionActor) ExecuteSaga(ctx context.Context, methodPairs ...MethodPair) {
 	saga := dtmgrpc.NewSagaGrpc(ta.dtmServerAddr, ta.gid)
+
 	for _, methodPair := range methodPairs {
 		saga = saga.Add(ta.withServerAction(methodPair.Action), ta.withServerCompensate(methodPair.Compensate), methodPair.ProtoMsg)
 	}

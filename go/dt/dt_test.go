@@ -1,6 +1,7 @@
 package dt
 
 import (
+	"context"
 	"testing"
 
 	"github.com/diwangtseb/essayes/go/dt/pb"
@@ -14,7 +15,7 @@ const (
 func TestDtGrpc(t *testing.T) {
 	actor := NewTransactionActor(dtm_server, grpc_server)
 
-	actor.ExecuteSaga(MethodPair{
+	actor.ExecuteSaga(context.TODO(), MethodPair{
 		Action:     "/dt.pb.TransService/TransIn",
 		Compensate: "/dt.pb.TransService/TransInRoll",
 		ProtoMsg: &pb.TransInReq{
