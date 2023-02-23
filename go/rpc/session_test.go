@@ -18,7 +18,7 @@ func TestRpcSession(t *testing.T) {
 			panic(err)
 		}
 		session := NewSession(conn, WithLens(1))
-		session.Write([]byte("Hello"))
+		session.Write([]byte("world"))
 		time.Sleep(time.Second * 1)
 	}()
 	go func() {
