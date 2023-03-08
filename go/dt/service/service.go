@@ -17,7 +17,7 @@ type TransService struct {
 
 // TransInRoll implements pb.TransServiceServer
 func (ta *TransService) TransInRoll(ctx context.Context, req *pb.TransInReq) (*pb.TransInReply, error) {
-	fmt.Println(req.Uid + "decrease" + u32tostr(req.Amount))
+	fmt.Println(req.Uid + " [decrease] " + u32tostr(req.Amount))
 	return &pb.TransInReply{
 		Success: true,
 	}, nil
@@ -29,7 +29,7 @@ func u32tostr(u32 uint32) string {
 
 // TransIn implements pb.TransServiceServer
 func (ts *TransService) TransIn(ctx context.Context, req *pb.TransInReq) (*pb.TransInReply, error) {
-	fmt.Println(req.Uid + "crease" + u32tostr(req.Amount))
+	fmt.Println(req.Uid + " [crease] " + u32tostr(req.Amount))
 	return &pb.TransInReply{
 		Success: false,
 	}, status.New(codes.Aborted, "test").Err()

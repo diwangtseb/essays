@@ -43,7 +43,7 @@ func NewTransactionActor(dtmAddr, grpcAddr string) TransactionActor {
 		dtmServerAddr:  dtmAddr,
 		grpcServerAddr: grpcAddr,
 		gid:            dtmgrpc.MustGenGid(dtmAddr),
-		logger:         log.Logger{},
+		logger:         *log.Default(),
 	}
 }
 
@@ -63,7 +63,7 @@ func (ta *transactionActor) ExecuteSaga(ctx context.Context, methodPairs ...Meth
 	}
 	saga.WaitResult = true
 	if err := saga.Submit(); err != nil {
-		ta.logger.Fatal(err)
+		ta.logger.Println(err)
 	}
 }
 
