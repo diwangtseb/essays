@@ -22,15 +22,30 @@ func TestDtGrpcSaga(t *testing.T) {
 			Uid:    "1",
 			Amount: 100,
 		},
-	})
+	}, MethodPair{
+		Action:     "/dt.pb.TransService/TransIn",
+		Compensate: "/dt.pb.TransService/TransInRoll",
+		ProtoMsg: &pb.TransInReq{
+			Uid:    "2",
+			Amount: 100,
+		},
+	},
+		MethodPair{
+			Action:     "/dt.pb.TransService/TransIn",
+			Compensate: "/dt.pb.TransService/TransInRoll",
+			ProtoMsg: &pb.TransInReq{
+				Uid:    "3",
+				Amount: 100,
+			},
+		},
+	)
 }
 
 func TestDtGrpcMsg(t *testing.T) {
 	actor := NewTransactionActor(dtm_server, grpc_server)
 
 	actor.ExecuteMsg(context.TODO(), MethodPair{
-		Action:     "/dt.pb.TransService/TransIn",
-		Compensate: "/dt.pb.TransService/TransInRoll",
+		Action: "/dt.pb.TransService/TransIn",
 		ProtoMsg: &pb.TransInReq{
 			Uid:    "1",
 			Amount: 100,

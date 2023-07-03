@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/diwangtseb/essayes/go/dt/pb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var _ pb.TransServiceServer = (*TransService)(nil)
@@ -52,9 +54,11 @@ func u32tostr(u32 uint32) string {
 // TransIn implements pb.TransServiceServer
 func (ts *TransService) TransIn(ctx context.Context, req *pb.TransInReq) (*pb.TransInReply, error) {
 	fmt.Println(req.Uid + " [crease] " + u32tostr(req.Amount))
-	// return &pb.TransInReply{
-	// 	Success: false,
-	// }, status.New(codes.Aborted, "test").Err()
+	if req.Uid == "3" {
+		return &pb.TransInReply{
+			Success: false,
+		}, status.New(codes.Aborted, "test").Err()
+	}
 	return &pb.TransInReply{
 		Success: true,
 	}, nil

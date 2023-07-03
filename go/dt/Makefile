@@ -7,3 +7,7 @@ pbg:
 			--go_out=paths=source_relative:./pb \
 			--go-grpc_out=paths=source_relative:./pb \
 			$(PROTO_FILES)
+
+.PHONY: run
+run:
+	go run cmd/main.go
