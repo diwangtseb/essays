@@ -13,6 +13,30 @@ type TransService struct {
 	pb.UnimplementedTransServiceServer
 }
 
+// TransCancel implements pb.TransServiceServer.
+func (*TransService) TransCancel(ctx context.Context, req *pb.TransCancelReq) (*pb.TransCancelReply, error) {
+	fmt.Println(req.Uid + " [cancel] " + u32tostr(req.Amount))
+	return &pb.TransCancelReply{
+		Success: true,
+	}, nil
+}
+
+// TransConfirm implements pb.TransServiceServer.
+func (*TransService) TransConfirm(ctx context.Context, req *pb.TransConfirmReq) (*pb.TransConfirmReply, error) {
+	fmt.Println(req.Uid + " [confirm] " + u32tostr(req.Amount))
+	return &pb.TransConfirmReply{
+		Success: true,
+	}, nil
+}
+
+// TransTry implements pb.TransServiceServer.
+func (*TransService) TransTry(ctx context.Context, req *pb.TransTryReq) (*pb.TransTryReply, error) {
+	fmt.Println(req.Uid + " [try] " + u32tostr(req.Amount))
+	return &pb.TransTryReply{
+		Success: true,
+	}, nil
+}
+
 // TransInRoll implements pb.TransServiceServer
 func (ta *TransService) TransInRoll(ctx context.Context, req *pb.TransInReq) (*pb.TransInReply, error) {
 	fmt.Println(req.Uid + " [decrease] " + u32tostr(req.Amount))

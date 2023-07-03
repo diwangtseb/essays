@@ -6,11 +6,15 @@ import (
 
 	"github.com/dtm-labs/client/dtmgrpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type MethodPair struct {
 	Action     string
 	Compensate string
+	Try        string
+	Confirm    string
+	Cancel     string
 	ProtoMsg   protoreflect.ProtoMessage
 }
 
@@ -65,27 +69,41 @@ func (ta *transactionActor) ExecuteSaga(ctx context.Context, methodPairs ...Meth
 	}
 	saga.WaitResult = true
 	if err := saga.Submit(); err != nil {
-		ta.logger.Println(err)
+		ta.logger.Fatal(err)
 	}
 }
 
 // ExecuteXa implements TransactionActor.
 func (ta *transactionActor) ExecuteXa(ctx context.Context, methodPairs ...MethodPair) {
+	empty := &emptypb.Empty{}
 	err := dtmgrpc.XaGlobalTransaction(ta.dtmServerAddr, ta.gid, func(xa *dtmgrpc.XaGrpc) error {
+		for _, methodPair := range methodPairs {
+			err := xa.CallBranch(methodPair.ProtoMsg, ta.withServerAction(methodPair.Action), empty)
+			if err != nil {
+				return err
+			}
+		}
 		return nil
 	})
 	if err != nil {
-		ta.logger.Println(err)
+		ta.logger.Fatal(err)
 	}
 }
 
 // ExecuteTcc implements TransactionActor.
 func (ta *transactionActor) ExecuteTcc(ctx context.Context, methodPairs ...MethodPair) {
+	empty := &emptypb.Empty{}
 	err := dtmgrpc.TccGlobalTransaction(ta.dtmServerAddr, ta.gid, func(tcc *dtmgrpc.TccGrpc) error {
+		for _, methodPair := range methodPairs {
+			err := tcc.CallBranch(methodPair.ProtoMsg, ta.withServerAction(methodPair.Try), ta.withServerAction(methodPair.Confirm), ta.withServerAction(methodPair.Cancel), empty)
+			if err != nil {
+				return err
+			}
+		}
 		return nil
 	})
 	if err != nil {
-		ta.logger.Println(err)
+		ta.logger.Fatal(err)
 	}
 }
 

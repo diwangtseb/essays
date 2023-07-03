@@ -25,6 +25,9 @@ type TransServiceClient interface {
 	TransIn(ctx context.Context, in *TransInReq, opts ...grpc.CallOption) (*TransInReply, error)
 	TransInRoll(ctx context.Context, in *TransInReq, opts ...grpc.CallOption) (*TransInReply, error)
 	TransOut(ctx context.Context, in *TransOutReq, opts ...grpc.CallOption) (*TransOutReply, error)
+	TransTry(ctx context.Context, in *TransTryReq, opts ...grpc.CallOption) (*TransTryReply, error)
+	TransConfirm(ctx context.Context, in *TransConfirmReq, opts ...grpc.CallOption) (*TransConfirmReply, error)
+	TransCancel(ctx context.Context, in *TransCancelReq, opts ...grpc.CallOption) (*TransCancelReply, error)
 }
 
 type transServiceClient struct {
@@ -62,6 +65,33 @@ func (c *transServiceClient) TransOut(ctx context.Context, in *TransOutReq, opts
 	return out, nil
 }
 
+func (c *transServiceClient) TransTry(ctx context.Context, in *TransTryReq, opts ...grpc.CallOption) (*TransTryReply, error) {
+	out := new(TransTryReply)
+	err := c.cc.Invoke(ctx, "/dt.pb.TransService/TransTry", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transServiceClient) TransConfirm(ctx context.Context, in *TransConfirmReq, opts ...grpc.CallOption) (*TransConfirmReply, error) {
+	out := new(TransConfirmReply)
+	err := c.cc.Invoke(ctx, "/dt.pb.TransService/TransConfirm", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transServiceClient) TransCancel(ctx context.Context, in *TransCancelReq, opts ...grpc.CallOption) (*TransCancelReply, error) {
+	out := new(TransCancelReply)
+	err := c.cc.Invoke(ctx, "/dt.pb.TransService/TransCancel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TransServiceServer is the server API for TransService service.
 // All implementations must embed UnimplementedTransServiceServer
 // for forward compatibility
@@ -69,6 +99,9 @@ type TransServiceServer interface {
 	TransIn(context.Context, *TransInReq) (*TransInReply, error)
 	TransInRoll(context.Context, *TransInReq) (*TransInReply, error)
 	TransOut(context.Context, *TransOutReq) (*TransOutReply, error)
+	TransTry(context.Context, *TransTryReq) (*TransTryReply, error)
+	TransConfirm(context.Context, *TransConfirmReq) (*TransConfirmReply, error)
+	TransCancel(context.Context, *TransCancelReq) (*TransCancelReply, error)
 	mustEmbedUnimplementedTransServiceServer()
 }
 
@@ -84,6 +117,15 @@ func (UnimplementedTransServiceServer) TransInRoll(context.Context, *TransInReq)
 }
 func (UnimplementedTransServiceServer) TransOut(context.Context, *TransOutReq) (*TransOutReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransOut not implemented")
+}
+func (UnimplementedTransServiceServer) TransTry(context.Context, *TransTryReq) (*TransTryReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransTry not implemented")
+}
+func (UnimplementedTransServiceServer) TransConfirm(context.Context, *TransConfirmReq) (*TransConfirmReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransConfirm not implemented")
+}
+func (UnimplementedTransServiceServer) TransCancel(context.Context, *TransCancelReq) (*TransCancelReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransCancel not implemented")
 }
 func (UnimplementedTransServiceServer) mustEmbedUnimplementedTransServiceServer() {}
 
@@ -152,6 +194,60 @@ func _TransService_TransOut_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TransService_TransTry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransTryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransServiceServer).TransTry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dt.pb.TransService/TransTry",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransServiceServer).TransTry(ctx, req.(*TransTryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TransService_TransConfirm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransConfirmReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransServiceServer).TransConfirm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dt.pb.TransService/TransConfirm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransServiceServer).TransConfirm(ctx, req.(*TransConfirmReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TransService_TransCancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransCancelReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransServiceServer).TransCancel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dt.pb.TransService/TransCancel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransServiceServer).TransCancel(ctx, req.(*TransCancelReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TransService_ServiceDesc is the grpc.ServiceDesc for TransService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +266,18 @@ var TransService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TransOut",
 			Handler:    _TransService_TransOut_Handler,
+		},
+		{
+			MethodName: "TransTry",
+			Handler:    _TransService_TransTry_Handler,
+		},
+		{
+			MethodName: "TransConfirm",
+			Handler:    _TransService_TransConfirm_Handler,
+		},
+		{
+			MethodName: "TransCancel",
+			Handler:    _TransService_TransCancel_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

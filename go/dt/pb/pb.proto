@@ -8,6 +8,9 @@ service TransService {
     rpc TransIn(TransInReq) returns (TransInReply){};
     rpc TransInRoll(TransInReq) returns (TransInReply){};
     rpc TransOut(TransOutReq) returns (TransOutReply){};
+    rpc TransTry(TransTryReq) returns (TransTryReply){};
+    rpc TransConfirm(TransConfirmReq) returns (TransConfirmReply){};
+    rpc TransCancel(TransCancelReq) returns (TransCancelReply){};
 }
 
 
@@ -24,5 +27,26 @@ message TransInReply{
     bool success = 1;
 }
 message TransOutReply{
+    bool success = 1;
+}
+message TransTryReq{
+    string uid = 1;
+    uint32 amount = 2;
+}
+message TransTryReply{
+    bool success = 1;
+}
+message TransConfirmReq{
+    string uid = 1;
+    uint32 amount = 2;
+}
+message TransConfirmReply{
+    bool success = 1;
+}
+message TransCancelReq{
+    string uid = 1;
+    uint32 amount = 2;
+}
+message TransCancelReply{
     bool success = 1;
 }
