@@ -1,3 +1,13 @@
+/*
+ * @Author: diwang diwang83963911@gamil.com
+ * @Date: 2023-02-21 17:15:26
+ * @LastEditors: diwang diwang83963911@gamil.com
+ * @LastEditTime: 2023-07-04 13:55:36
+ * @FilePath: /dt/dt.go
+ * @Description: used to build dmt and grpc services
+ *
+ * Copyright (c) 2023 by diwang83963911@gamil.com, All Rights Reserved.
+ */
 package dt
 
 import (
@@ -10,12 +20,12 @@ import (
 )
 
 type MethodPair struct {
-	Action     string
-	Compensate string
-	Try        string
-	Confirm    string
-	Cancel     string
-	ProtoMsg   protoreflect.ProtoMessage
+	Action     string                    // your pb service's rpc method be used for saga、xa、msg
+	Compensate string                    // on action compensate be used for saga
+	Try        string                    // tcc
+	Confirm    string                    // tcc
+	Cancel     string                    // tcc
+	ProtoMsg   protoreflect.ProtoMessage // your pb service's rpc method request content
 }
 
 type TransactionActor interface {
@@ -32,6 +42,12 @@ type transactionActor struct {
 	logger         log.Logger
 }
 
+/**
+ * @description: init ta
+ * @param {string} dtmAddr
+ * @param {string} grpcAddr
+ * @return {*} ta
+ */
 func NewTransactionActor(dtmAddr, grpcAddr string) TransactionActor {
 	return &transactionActor{
 		dtmServerAddr:  dtmAddr,
